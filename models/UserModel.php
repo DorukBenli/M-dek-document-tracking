@@ -39,5 +39,53 @@ class UserModel {
         $stmt->close();
         return $result;
     }
+
+    // Associate a user with a course
+    public function addTeachingCourse($username, $courseCode) {
+        $stmt = mysqli_prepare($this->conn, "INSERT INTO Teaches (user_username, course_code) VALUES (?, ?)");
+        mysqli_stmt_bind_param($stmt, 'ss', $username, $courseCode);
+        $result = mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return $result;
+    }
+
+    // Get courses taught by a user
+    public function getTeachingCourses($username) {
+        $stmt = mysqli_prepare($this->conn, "SELECT c.* FROM Course c JOIN Teaches t ON c.course_code = t.course_code WHERE t.user_username = ?");
+        mysqli_stmt_bind_param($stmt, 's', $username);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $courses = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $courses[] = $row;
+        }
+        mysqli_free_result($result);
+        mysqli_stmt_close($stmt);
+        return $courses;
+    }
+
+    // Associate a user with a course
+    public function addHandlingCourse($username, $courseCode) {
+        $stmt = mysqli_prepare($this->conn, "INSERT INTO Handles (user_username, course_code) VALUES (?, ?)");
+        mysqli_stmt_bind_param($stmt, 'ss', $username, $courseCode);
+        $result = mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return $result;
+    }
+
+    // Get courses handled by a user
+    public function getHandlingCourses($username) {
+        $stmt = mysqli_prepare($this->conn, "SELECT c.* FROM Course c JOIN Handles t ON c.course_code = t.course_code WHERE t.user_username = ?");
+        mysqli_stmt_bind_param($stmt, 's', $username);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $courses = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $courses[] = $row;
+        }
+        mysqli_free_result($result);
+        mysqli_stmt_close($stmt);
+        return $courses;
+    }
 }
 ?>

@@ -33,3 +33,27 @@ CREATE TABLE Submit (
     FOREIGN KEY (user_username) REFERENCES User(username),
     FOREIGN KEY (doc_id) REFERENCES Documents(doc_id)
 );
+
+CREATE TABLE Teaches (
+    user_username VARCHAR(255),
+    course_code VARCHAR(255),
+    FOREIGN KEY (user_username) REFERENCES User(username),
+    FOREIGN KEY (course_code) REFERENCES Course(course_code),
+    PRIMARY KEY (user_username, course_code)
+);
+
+CREATE TABLE Handles (
+    user_username VARCHAR(255),
+    course_code VARCHAR(255),
+    FOREIGN KEY (user_username) REFERENCES User(username),
+    FOREIGN KEY (course_code) REFERENCES Course(course_code),
+    PRIMARY KEY (user_username, course_code)
+);
+
+CREATE TABLE CourseRequirements (
+    course_code VARCHAR(255),
+    requirement_type VARCHAR(255),
+    FOREIGN KEY (course_code) REFERENCES Course(course_code),
+    FOREIGN KEY (requirement_type) REFERENCES Requirement(type),
+    PRIMARY KEY (course_code, requirement_type)
+);

@@ -39,5 +39,59 @@ class CourseModel {
         $stmt->close();
         return $result;
     }
+
+    // Associate a course with a requirement
+    public function addCourseRequirement($courseCode, $requirementType) {
+        $stmt = mysqli_prepare($this->conn, "INSERT INTO CourseRequirements (course_code, requirement_type) VALUES (?, ?)");
+        mysqli_stmt_bind_param($stmt, 'ss', $courseCode, $requirementType);
+        $result = mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return $result;
+    }
+
+    // Get requirements associated with a course
+    public function getCourseRequirements($courseCode) {
+        $stmt = mysqli_prepare($this->conn, "SELECT r.* FROM Requirement r JOIN CourseRequirements cr ON r.type = cr.requirement_type WHERE cr.course_code = ?");
+        mysqli_stmt_bind_param($stmt, 's', $courseCode);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $requirements = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $requirements[] = $row;
+        }
+        mysqli_free_result($result);
+        mysqli_stmt_close($stmt);
+        return $requirements;
+    }
+
+    // Get users who teach a specific course
+    public function getUsersTeachingCourse($courseCode) {
+        $stmt = mysqli_prepare($this->conn, "SELECT u.* FROM User u JOIN Teaches t ON u.username = t.user_username WHERE t.course_code = ?");
+        mysqli_stmt_bind_param($stmt, 's', $courseCode);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $users = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $users[] = $row;
+        }
+        mysqli_free_result($result);
+        mysqli_stmt_close($stmt);
+        return $users;
+    }
+
+    // Get users who teach a specific course
+    public function getUsersHandlingCourse($courseCode) {
+        $stmt = mysqli_prepare($this->conn, "SELECT u.* FROM User u JOIN Handles t ON u.username = t.user_username WHERE t.course_code = ?");
+        mysqli_stmt_bind_param($stmt, 's', $courseCode);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $users = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $users[] = $row;
+        }
+        mysqli_free_result($result);
+        mysqli_stmt_close($stmt);
+        return $users;
+    }
 }
 ?>

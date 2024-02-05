@@ -29,5 +29,53 @@ class CourseController {
     public function createCourseView() {
         include 'views/add_course.php';
     }
+
+    // Associate a course with a requirement
+    public function associateCourseWithRequirement($courseCode, $requirementType) {
+        $result = $this->courseModel->addCourseRequirement($courseCode, $requirementType);
+        if ($result) {
+            // Success: Return a success response
+            echo json_encode(["message" => "Course associated with the requirement successfully"]);
+        } else {
+            // Error: Return an error response
+            echo json_encode(["message" => "Failed to associate course with the requirement"]);
+        }
+    }
+
+    // Get requirements associated with a course
+    public function getCourseRequirements($courseCode) {
+        $requirements = $this->courseModel->getCourseRequirements($courseCode);
+        if (!empty($requirements)) {
+            // Success: Return the requirements as a JSON response
+            echo json_encode($requirements);
+        } else {
+            // No requirements found: Return an empty response or an error message
+            echo json_encode(["message" => "No requirements found for this course"]);
+        }
+    }
+
+    // Get users who teach a specific course
+    public function getUsersTeachingThisCourse($courseCode) {
+        $users = $this->courseModel->getUsersTeachingCourse($courseCode);
+        if (!empty($users)) {
+            // Success: Return the users as a JSON response
+            echo json_encode($users);
+        } else {
+            // No users found: Return an empty response or an error message
+            echo json_encode(["message" => "No users found teaching this course"]);
+        }
+    }
+
+    // Get users who handle a specific course
+    public function getUsersHandlingThisCourse($courseCode) {
+        $users = $this->courseModel->getUsersTeachingCourse($courseCode);
+        if (!empty($users)) {
+            // Success: Return the users as a JSON response
+            echo json_encode($users);
+        } else {
+            // No users found: Return an empty response or an error message
+            echo json_encode(["message" => "No users found handling this course"]);
+        }
+    }
 }
 ?>
