@@ -1,8 +1,8 @@
 <?php
     $db_server = "localhost";
-    $db_user = "ens491";
-    $db_pass = "1234";
-    $db_name = "ens491";
+    $db_user = "root";
+    $db_pass = "";
+    $db_name = "bitirme";
 
     // Attempt to connect to the MySQL database
     $conn = mysqli_connect($db_server, $db_user, $db_pass, $db_name);

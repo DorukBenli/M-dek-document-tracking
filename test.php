@@ -13,8 +13,8 @@ $requirementController = new RequirementController($conn);
 $documentController = new DocumentController($conn);
 $submitController = new SubmitController($conn);
 
-$userController->createUser("test", "argor");
-
+$userController->createUser("deneme", "argor");
+//$result = $courseController->createCourse($course_code, $course_name, $exam_count, $program_code, $term, $crn, $section_code);
 $userData = $userController->getUser("testuser");
 echo($userData);
 

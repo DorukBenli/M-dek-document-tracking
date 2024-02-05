@@ -25,5 +25,9 @@ class CourseController {
     public function deleteCourse($course_code) {
         return $this->courseModel->deleteCourse($course_code);
     }
+
+    public function createCourseView() {
+        include 'views/add_course.php';
+    }
 }
 ?>

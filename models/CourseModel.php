@@ -7,7 +7,7 @@ class CourseModel {
     }
 
     public function createCourse($course_code, $course_name, $exam_count, $program_code, $term, $crn, $section_code) {
-        $stmt = $this->conn->prepare("INSERT INTO Course (course_code, course_name, exam_count, program_code, term, crn, section_code) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $this->conn->prepare("INSERT INTO course (course_code, course_name, exam_count, program_code, term, crn, section_code) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param('ssissss', $course_code, $course_name, $exam_count, $program_code, $term, $crn, $section_code);
         $result = $stmt->execute();
         $stmt->close();
