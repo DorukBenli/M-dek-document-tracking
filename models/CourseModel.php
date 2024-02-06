@@ -40,19 +40,17 @@ class CourseModel {
         return $result;
     }
 
-    // Associate a course with a requirement
-    public function addCourseRequirement($courseCode, $requirementType) {
-        $stmt = mysqli_prepare($this->conn, "INSERT INTO CourseRequirements (course_code, requirement_type) VALUES (?, ?)");
-        mysqli_stmt_bind_param($stmt, 'ss', $courseCode, $requirementType);
+    public function addCourseRequirement($term, $crn, $requirementType) {
+        $stmt = mysqli_prepare($this->conn, "INSERT INTO CourseRequirements (term, crn, requirement_type) VALUES (?, ?, ?)");
+        mysqli_stmt_bind_param($stmt, 'sis', $term, $crn, $requirementType);
         $result = mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         return $result;
     }
 
-    // Get requirements associated with a course
-    public function getCourseRequirements($courseCode) {
-        $stmt = mysqli_prepare($this->conn, "SELECT r.* FROM Requirement r JOIN CourseRequirements cr ON r.type = cr.requirement_type WHERE cr.course_code = ?");
-        mysqli_stmt_bind_param($stmt, 's', $courseCode);
+    public function getCourseRequirements($term, $crn) {
+        $stmt = mysqli_prepare($this->conn, "SELECT r.* FROM Requirement r JOIN CourseRequirements cr ON r.type = cr.requirement_type WHERE cr.term = ? AND cr.crn = ?");
+        mysqli_stmt_bind_param($stmt, 'si', $term, $crn);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $requirements = [];
@@ -64,10 +62,9 @@ class CourseModel {
         return $requirements;
     }
 
-    // Get users who teach a specific course
-    public function getUsersTeachingCourse($courseCode) {
-        $stmt = mysqli_prepare($this->conn, "SELECT u.* FROM User u JOIN Teaches t ON u.username = t.user_username WHERE t.course_code = ?");
-        mysqli_stmt_bind_param($stmt, 's', $courseCode);
+    public function getUsersTeachingCourse($term, $crn) {
+        $stmt = mysqli_prepare($this->conn, "SELECT u.* FROM User u JOIN Teaches t ON u.username = t.username WHERE t.term = ? AND t.crn = ?");
+        mysqli_stmt_bind_param($stmt, 'si', $term, $crn);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $users = [];
@@ -79,10 +76,9 @@ class CourseModel {
         return $users;
     }
 
-    // Get users who teach a specific course
-    public function getUsersHandlingCourse($courseCode) {
-        $stmt = mysqli_prepare($this->conn, "SELECT u.* FROM User u JOIN Handles t ON u.username = t.user_username WHERE t.course_code = ?");
-        mysqli_stmt_bind_param($stmt, 's', $courseCode);
+    public function getUsersHandlingCourse($term, $crn) {
+        $stmt = mysqli_prepare($this->conn, "SELECT u.* FROM User u JOIN Handles h ON u.username = h.username WHERE h.term = ? AND h.crn = ?");
+        mysqli_stmt_bind_param($stmt, 'si', $term, $crn);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $users = [];

@@ -8,22 +8,22 @@ class DocumentController {
         $this->documentModel = new DocumentModel($dbConnection);
     }
 
-    public function createDocument($doc_type, $pdf_data, $soft_copy, $exam) {
-        return $this->documentModel->createDocument($doc_type, $pdf_data, $soft_copy, $exam);
+    public function createDocument($type, $pdf_data, $soft, $exam) {
+        return $this->documentModel->createDocument($type, $pdf_data, $soft, $exam);
     }
 
-    public function getDocument($doc_id) {
-        $document = $this->documentModel->getDocument($doc_id);
+    public function getDocument($type) {
+        $document = $this->documentModel->getDocument($type);
         // You can render the view here or return the document data as needed
         return $document;
     }
 
-    public function updateDocument($doc_id, $doc_type, $pdf_data, $soft_copy, $exam) {
-        return $this->documentModel->updateDocument($doc_id, $doc_type, $pdf_data, $soft_copy, $exam);
+    public function updateDocument($type, $pdf_data, $soft, $exam) {
+        return $this->documentModel->updateDocument($type, $pdf_data, $soft, $exam);
     }
 
-    public function deleteDocument($doc_id) {
-        return $this->documentModel->deleteDocument($doc_id);
+    public function deleteDocument($type) {
+        return $this->documentModel->deleteDocument($type);
     }
 }
 ?>

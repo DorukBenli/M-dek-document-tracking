@@ -1,59 +1,88 @@
 #database creation code
 
 CREATE TABLE User (
-    username VARCHAR(255) PRIMARY KEY,
-    role VARCHAR(255) NOT NULL
+    username VARCHAR(255) NOT NULL,
+    role VARCHAR(255),
+    PRIMARY KEY (username)
 );
 
 CREATE TABLE Course (
-    course_code VARCHAR(255) PRIMARY KEY,
-    course_name VARCHAR(255) NOT NULL,
+    course_code VARCHAR(255),
+    course_name VARCHAR(255),
     exam_count INT,
     program_code VARCHAR(255),
     term VARCHAR(255),
-    crn VARCHAR(255),
-    section_code VARCHAR(255)
+    crn INT,
+    section_code VARCHAR(255),
+    PRIMARY KEY (term, crn)
 );
+
+CREATE TABLE Handles (
+    crn INT,
+    username VARCHAR(255),
+    PRIMARY KEY (crn, username),
+    FOREIGN KEY (crn) REFERENCES Course(crn),
+    FOREIGN KEY (username) REFERENCES User(username)
+);
+
+
+CREATE TABLE Teaches (
+    crn INT,
+    username VARCHAR(255),
+    PRIMARY KEY (crn, username),
+    FOREIGN KEY (crn) REFERENCES Course(crn),
+    FOREIGN KEY (username) REFERENCES User(username)
+);
+
 
 CREATE TABLE Requirement (
     type VARCHAR(255) PRIMARY KEY
 );
 
+
 CREATE TABLE Documents (
-    doc_id INT PRIMARY KEY AUTO_INCREMENT,
-    doc_type VARCHAR(255),
-    pdf_data BLOB,
-    soft_copy BOOLEAN,
-    exam BOOLEAN
+    type VARCHAR(255) PRIMARY KEY,
+    exam BOOLEAN,
+    soft BOOLEAN
+);
+
+
+CREATE TABLE RequiredDocuments (
+    requirement_type VARCHAR(255),
+    document_type VARCHAR(255),
+    PRIMARY KEY (requirement_type, document_type),
+    FOREIGN KEY (requirement_type) REFERENCES Requirement(type),
+    FOREIGN KEY (document_type) REFERENCES Documents(type)
+);
+
+
+CREATE TABLE CourseRequirements (
+    requirement_type VARCHAR(255),
+    term VARCHAR(255),
+    crn INT,
+    PRIMARY KEY (requirement_type, term, crn),
+    FOREIGN KEY (requirement_type) REFERENCES Requirement(type),
+    FOREIGN KEY (term, crn) REFERENCES Course(term, crn)
 );
 
 CREATE TABLE Submit (
-    user_username VARCHAR(255),
-    doc_id INT,
-    FOREIGN KEY (user_username) REFERENCES User(username),
-    FOREIGN KEY (doc_id) REFERENCES Documents(doc_id)
+    term VARCHAR(255),
+    crn INT,
+    document_type VARCHAR(255),
+    submitted BOOLEAN,
+    pdf_data BLOB,
+    PRIMARY KEY (term, crn, document_type),
+    FOREIGN KEY (term, crn) REFERENCES Course(term, crn),
+    FOREIGN KEY (document_type) REFERENCES Documents(type)
 );
 
-CREATE TABLE Teaches (
-    user_username VARCHAR(255),
-    course_code VARCHAR(255),
-    FOREIGN KEY (user_username) REFERENCES User(username),
-    FOREIGN KEY (course_code) REFERENCES Course(course_code),
-    PRIMARY KEY (user_username, course_code)
-);
-
-CREATE TABLE Handles (
-    user_username VARCHAR(255),
-    course_code VARCHAR(255),
-    FOREIGN KEY (user_username) REFERENCES User(username),
-    FOREIGN KEY (course_code) REFERENCES Course(course_code),
-    PRIMARY KEY (user_username, course_code)
-);
-
-CREATE TABLE CourseRequirements (
-    course_code VARCHAR(255),
-    requirement_type VARCHAR(255),
-    FOREIGN KEY (course_code) REFERENCES Course(course_code),
-    FOREIGN KEY (requirement_type) REFERENCES Requirement(type),
-    PRIMARY KEY (course_code, requirement_type)
+CREATE TABLE Soft_Submit (
+    term VARCHAR(255),
+    crn INT,
+    document_type VARCHAR(255),
+    submitted_prof BOOLEAN,
+    submitted_arg BOOLEAN,
+    PRIMARY KEY (term, crn, document_type),
+    FOREIGN KEY (term, crn) REFERENCES Course(term, crn),
+    FOREIGN KEY (document_type) REFERENCES Documents(type)
 );

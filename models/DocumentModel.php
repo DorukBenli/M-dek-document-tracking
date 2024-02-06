@@ -6,17 +6,17 @@ class DocumentModel {
         $this->conn = $dbConnection;
     }
 
-    public function createDocument($doc_type, $pdf_data, $soft_copy, $exam) {
-        $stmt = $this->conn->prepare("INSERT INTO Documents (doc_type, pdf_data, soft_copy, exam) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param('ssii', $doc_type, $pdf_data, $soft_copy, $exam);
+    public function createDocument($type, $pdf_data, $soft, $exam) {
+        $stmt = $this->conn->prepare("INSERT INTO Documents (type, pdf_data, soft, exam) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param('sbii', $type, $pdf_data, $soft, $exam);
         $result = $stmt->execute();
         $stmt->close();
         return $result;
     }
 
-    public function getDocument($doc_id) {
-        $stmt = $this->conn->prepare("SELECT * FROM Documents WHERE doc_id = ?");
-        $stmt->bind_param('i', $doc_id);
+    public function getDocument($type) {
+        $stmt = $this->conn->prepare("SELECT * FROM Documents WHERE type = ?");
+        $stmt->bind_param('s', $type);
         $stmt->execute();
         $result = $stmt->get_result();
         $document = $result->fetch_assoc();
@@ -24,17 +24,17 @@ class DocumentModel {
         return $document;
     }
 
-    public function updateDocument($doc_id, $doc_type, $pdf_data, $soft_copy, $exam) {
-        $stmt = $this->conn->prepare("UPDATE Documents SET doc_type = ?, pdf_data = ?, soft_copy = ?, exam = ? WHERE doc_id = ?");
-        $stmt->bind_param('ssiis', $doc_type, $pdf_data, $soft_copy, $exam, $doc_id);
+    public function updateDocument($type, $pdf_data, $soft, $exam) {
+        $stmt = $this->conn->prepare("UPDATE Documents SET pdf_data = ?, soft = ?, exam = ? WHERE type = ?");
+        $stmt->bind_param('biis', $pdf_data, $soft, $exam, $type);
         $result = $stmt->execute();
         $stmt->close();
         return $result;
     }
 
-    public function deleteDocument($doc_id) {
-        $stmt = $this->conn->prepare("DELETE FROM Documents WHERE doc_id = ?");
-        $stmt->bind_param('i', $doc_id);
+    public function deleteDocument($type) {
+        $stmt = $this->conn->prepare("DELETE FROM Documents WHERE type = ?");
+        $stmt->bind_param('s', $type);
         $result = $stmt->execute();
         $stmt->close();
         return $result;

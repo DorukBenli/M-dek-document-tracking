@@ -42,8 +42,8 @@ class CourseController {
     }
 
     // Associate a course with a requirement
-    public function associateCourseWithRequirement($courseCode, $requirementType) {
-        $result = $this->courseModel->addCourseRequirement($courseCode, $requirementType);
+    public function associateCourseWithRequirement($term, $crn, $requirementType) {
+        $result = $this->courseModel->addCourseRequirement($term, $crn, $requirementType);
         if ($result) {
             // Success: Return a success response
             echo json_encode(["message" => "Course associated with the requirement successfully"]);
@@ -54,8 +54,8 @@ class CourseController {
     }
 
     // Get requirements associated with a course
-    public function getCourseRequirements($courseCode) {
-        $requirements = $this->courseModel->getCourseRequirements($courseCode);
+    public function getCourseRequirements($term, $crn) {
+        $requirements = $this->courseModel->getCourseRequirements($term, $crn);
         if (!empty($requirements)) {
             // Success: Return the requirements as a JSON response
             echo json_encode($requirements);
@@ -66,8 +66,8 @@ class CourseController {
     }
 
     // Get users who teach a specific course
-    public function getUsersTeachingThisCourse($courseCode) {
-        $users = $this->courseModel->getUsersTeachingCourse($courseCode);
+    public function getUsersTeachingThisCourse($term, $crn) {
+        $users = $this->courseModel->getUsersTeachingCourse($term, $crn);
         if (!empty($users)) {
             // Success: Return the users as a JSON response
             echo json_encode($users);
@@ -78,8 +78,8 @@ class CourseController {
     }
 
     // Get users who handle a specific course
-    public function getUsersHandlingThisCourse($courseCode) {
-        $users = $this->courseModel->getUsersTeachingCourse($courseCode);
+    public function getUsersHandlingThisCourse($term, $crn) {
+        $users = $this->courseModel->getUsersHandlingCourse($term, $crn);
         if (!empty($users)) {
             // Success: Return the users as a JSON response
             echo json_encode($users);
