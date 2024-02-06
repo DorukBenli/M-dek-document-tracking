@@ -1,6 +1,8 @@
 <?php
 require_once 'models/CourseModel.php';
 
+use Psr\Http\Message\ResponseInterface as Response;
+
 class CourseController {
     private $courseModel;
 
@@ -26,8 +28,17 @@ class CourseController {
         return $this->courseModel->deleteCourse($course_code);
     }
 
-    public function createCourseView() {
+    public function createCourseView(Response $response): Response {
+         // Start output buffering
+        ob_start();
+        // Include your view file
         include 'views/add_course.php';
+        // Get the contents of the buffer
+        $html = ob_get_clean();
+        // Write the contents to the response body
+        $response->getBody()->write($html);
+
+        return $response;
     }
 
     // Associate a course with a requirement
