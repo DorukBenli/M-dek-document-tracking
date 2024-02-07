@@ -25,5 +25,23 @@ class DocumentController {
     public function deleteDocument($type) {
         return $this->documentModel->deleteDocument($type);
     }
+
+    public function associateDocumentWithRequirement($documentType, $requirementType) {
+        $result = $this->documentModel->associateWithRequirement($documentType, $requirementType);
+        if ($result) {
+            echo json_encode(["message" => "Requirement associated with document successfully"]);
+        } else {
+            echo json_encode(["message" => "Failed to associate requirement with document"]);
+        }
+    }
+
+    public function getDocumentRequirements($documentType) {
+        $requirements = $this->documentModel->getAssociatedRequirements($documentType);
+        if (!empty($requirements)) {
+            echo json_encode($requirements);
+        } else {
+            echo json_encode(["message" => "No requirements found for this document"]);
+        }
+    }
 }
 ?>

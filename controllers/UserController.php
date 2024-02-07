@@ -31,50 +31,38 @@ class UserController {
         include 'views/user_create.php';
     }
 
-    // Associate a user with a course
-    public function associateUserWithCourse($username, $courseCode) {
-        $result = $this->userModel->addTeachingCourse($username, $courseCode);
+    public function associateUserWithTeachingCourse($username, $term, $crn) {
+        $result = $this->userModel->addTeachingCourse($username, $term, $crn);
         if ($result) {
-            // Success: Return a success response
-            echo json_encode(["message" => "User associated with the course (teach) successfully"]);
+            echo json_encode(["message" => "User associated with the course for teaching successfully"]);
         } else {
-            // Error: Return an error response
-            echo json_encode(["message" => "Failed to associate user with the course (teach)"]);
+            echo json_encode(["message" => "Failed to associate user with the course for teaching"]);
         }
     }
 
-    // Get courses taught by a user
     public function getCoursesTaughtByUser($username) {
         $courses = $this->userModel->getTeachingCourses($username);
         if (!empty($courses)) {
-            // Success: Return the courses as a JSON response
             echo json_encode($courses);
         } else {
-            // No courses found: Return an empty response or an error message
             echo json_encode(["message" => "No courses are taught by this user"]);
         }
     }
 
-    // Associate a user with a course
-    public function associateUserWithCourseHandle($username, $courseCode) {
-        $result = $this->userModel->addHandlingCourse($username, $courseCode);
+    public function associateUserWithHandlingCourse($username, $term, $crn) {
+        $result = $this->userModel->addHandlingCourse($username, $term, $crn);
         if ($result) {
-            // Success: Return a success response
-            echo json_encode(["message" => "User associated with the course (handle) successfully"]);
+            echo json_encode(["message" => "User associated with the course for handling successfully"]);
         } else {
-            // Error: Return an error response
-            echo json_encode(["message" => "Failed to associate user with the course (handle)"]);
+            echo json_encode(["message" => "Failed to associate user with the course for handling"]);
         }
     }
 
-    // Get courses taught by a user
     public function getCoursesHandledByUser($username) {
         $courses = $this->userModel->getHandlingCourses($username);
         if (!empty($courses)) {
-            // Success: Return the courses as a JSON response
             echo json_encode($courses);
         } else {
-            // No courses found: Return an empty response or an error message
             echo json_encode(["message" => "No courses are handled by this user"]);
         }
     }

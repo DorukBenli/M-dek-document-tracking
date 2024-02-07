@@ -8,18 +8,16 @@ class SubmitController {
         $this->submitModel = new SubmitModel($dbConnection);
     }
 
-    public function submitDocument($user_username, $doc_id) {
-        return $this->submitModel->submitDocument($user_username, $doc_id);
+    public function submitDocument($term, $crn, $document_type, $submitted, $pdf_data) {
+        return $this->submitModel->submitDocument($term, $crn, $document_type, $submitted, $pdf_data);
     }
 
-    public function getSubmittedDocumentsByUser($user_username) {
-        $submittedDocuments = $this->submitModel->getSubmittedDocumentsByUser($user_username);
-        // You can render the view here or return the submitted documents as needed
-        return $submittedDocuments;
+    public function getSubmittedDocuments($term, $crn) {
+        return $this->submitModel->getSubmittedDocuments($term, $crn);
     }
 
-    public function deleteSubmission($user_username, $doc_id) {
-        return $this->submitModel->deleteSubmission($user_username, $doc_id);
+    public function deleteSubmission($term, $crn, $document_type) {
+        return $this->submitModel->deleteSubmission($term, $crn, $document_type);
     }
 }
 ?>

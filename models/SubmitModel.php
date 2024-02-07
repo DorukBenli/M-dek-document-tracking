@@ -6,17 +6,17 @@ class SubmitModel {
         $this->conn = $dbConnection;
     }
 
-    public function submitDocument($user_username, $doc_id) {
-        $stmt = $this->conn->prepare("INSERT INTO Submit (user_username, doc_id) VALUES (?, ?)");
-        $stmt->bind_param('si', $user_username, $doc_id);
+    public function submitDocument($term, $crn, $document_type, $submitted, $pdf_data) {
+        $stmt = $this->conn->prepare("INSERT INTO Submit (term, crn, document_type, submitted, pdf_data) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param('siisb', $term, $crn, $document_type, $submitted, $pdf_data);
         $result = $stmt->execute();
         $stmt->close();
         return $result;
     }
 
-    public function getSubmittedDocumentsByUser($user_username) {
-        $stmt = $this->conn->prepare("SELECT * FROM Submit WHERE user_username = ?");
-        $stmt->bind_param('s', $user_username);
+    public function getSubmittedDocuments($term, $crn) {
+        $stmt = $this->conn->prepare("SELECT * FROM Submit WHERE term = ? AND crn = ?");
+        $stmt->bind_param('si', $term, $crn);
         $stmt->execute();
         $result = $stmt->get_result();
         $submittedDocuments = [];
@@ -27,9 +27,9 @@ class SubmitModel {
         return $submittedDocuments;
     }
 
-    public function deleteSubmission($user_username, $doc_id) {
-        $stmt = $this->conn->prepare("DELETE FROM Submit WHERE user_username = ? AND doc_id = ?");
-        $stmt->bind_param('si', $user_username, $doc_id);
+    public function deleteSubmission($term, $crn, $document_type) {
+        $stmt = $this->conn->prepare("DELETE FROM Submit WHERE term = ? AND crn = ? AND document_type = ?");
+        $stmt->bind_param('sis', $term, $crn, $document_type);
         $result = $stmt->execute();
         $stmt->close();
         return $result;

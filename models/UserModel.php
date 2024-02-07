@@ -40,10 +40,9 @@ class UserModel {
         return $result;
     }
 
-    // Associate a user with a course
-    public function addTeachingCourse($username, $courseCode) {
-        $stmt = mysqli_prepare($this->conn, "INSERT INTO Teaches (user_username, course_code) VALUES (?, ?)");
-        mysqli_stmt_bind_param($stmt, 'ss', $username, $courseCode);
+    public function addTeachingCourse($username, $term, $crn) {
+        $stmt = mysqli_prepare($this->conn, "INSERT INTO Teaches (username, term, crn) VALUES (?, ?, ?)");
+        mysqli_stmt_bind_param($stmt, 'ssi', $username, $term, $crn);
         $result = mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         return $result;
@@ -51,7 +50,7 @@ class UserModel {
 
     // Get courses taught by a user
     public function getTeachingCourses($username) {
-        $stmt = mysqli_prepare($this->conn, "SELECT c.* FROM Course c JOIN Teaches t ON c.course_code = t.course_code WHERE t.user_username = ?");
+        $stmt = mysqli_prepare($this->conn, "SELECT c.* FROM Course c JOIN Teaches t ON c.term = t.term AND c.crn = t.crn WHERE t.username = ?");
         mysqli_stmt_bind_param($stmt, 's', $username);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -64,10 +63,10 @@ class UserModel {
         return $courses;
     }
 
-    // Associate a user with a course
-    public function addHandlingCourse($username, $courseCode) {
-        $stmt = mysqli_prepare($this->conn, "INSERT INTO Handles (user_username, course_code) VALUES (?, ?)");
-        mysqli_stmt_bind_param($stmt, 'ss', $username, $courseCode);
+    // Associate a user with a course for handling
+    public function addHandlingCourse($username, $term, $crn) {
+        $stmt = mysqli_prepare($this->conn, "INSERT INTO Handles (username, term, crn) VALUES (?, ?, ?)");
+        mysqli_stmt_bind_param($stmt, 'ssi', $username, $term, $crn);
         $result = mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         return $result;
@@ -75,7 +74,7 @@ class UserModel {
 
     // Get courses handled by a user
     public function getHandlingCourses($username) {
-        $stmt = mysqli_prepare($this->conn, "SELECT c.* FROM Course c JOIN Handles t ON c.course_code = t.course_code WHERE t.user_username = ?");
+        $stmt = mysqli_prepare($this->conn, "SELECT c.* FROM Course c JOIN Handles h ON c.term = h.term AND c.crn = h.crn WHERE h.username = ?");
         mysqli_stmt_bind_param($stmt, 's', $username);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);

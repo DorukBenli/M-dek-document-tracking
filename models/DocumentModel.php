@@ -39,5 +39,36 @@ class DocumentModel {
         $stmt->close();
         return $result;
     }
+
+    public function associateWithRequirement($documentType, $requirementType) {
+        try {
+            $stmt = $this->conn->prepare("INSERT INTO RequiredDocuments (document_type, requirement_type) VALUES (?, ?)");
+            $stmt->bind_param('ss', $documentType, $requirementType);
+            $result = $stmt->execute();
+            $stmt->close();
+            return $result;
+        } catch (Exception $e) {
+            // Handle exception
+            return false;
+        }
+    }
+
+    public function getAssociatedRequirements($documentType) {
+        try {
+            $stmt = $this->conn->prepare("SELECT r.* FROM Requirement r JOIN RequiredDocuments rd ON r.type = rd.requirement_type WHERE rd.document_type = ?");
+            $stmt->bind_param('s', $documentType);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $requirements = [];
+            while ($row = $result->fetch_assoc()) {
+                $requirements[] = $row;
+            }
+            $stmt->close();
+            return $requirements;
+        } catch (Exception $e) {
+            // Handle exception
+            return [];
+        }
+    }
 }
 ?>

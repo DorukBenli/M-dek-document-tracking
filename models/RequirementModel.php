@@ -76,5 +76,36 @@ class RequirementModel {
             }
         }
     }
+
+    public function associateWithDocument($requirementType, $documentType) {
+        try {
+            $stmt = $this->conn->prepare("INSERT INTO RequiredDocuments (requirement_type, document_type) VALUES (?, ?)");
+            $stmt->bind_param('ss', $requirementType, $documentType);
+            $result = $stmt->execute();
+            $stmt->close();
+            return $result;
+        } catch (Exception $e) {
+            // Handle exception
+            return false;
+        }
+    }
+
+    public function getAssociatedDocuments($requirementType) {
+        try {
+            $stmt = $this->conn->prepare("SELECT d.* FROM Documents d JOIN RequiredDocuments rd ON d.type = rd.document_type WHERE rd.requirement_type = ?");
+            $stmt->bind_param('s', $requirementType);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $documents = [];
+            while ($row = $result->fetch_assoc()) {
+                $documents[] = $row;
+            }
+            $stmt->close();
+            return $documents;
+        } catch (Exception $e) {
+            // Handle exception
+            return [];
+        }
+    }
 }
 ?>
