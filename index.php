@@ -1,21 +1,41 @@
-<?php
-   include("helper.php");
-   include("database.php");
-
-    $res = createUser("ASDFSAFSA","Argor");
-    echo "{$res}";
-
-    mysqli_close($conn);
-?>
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <!-- Other head elements -->
+    <title>Web for MUDEK Document Tracking System</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            height: 55px;
+            /* Height of the header */
+        }
+
+        .content {
+            position: absolute;
+            top: 100px;
+            /* Adjust top position as needed */
+            left: 50%;
+            /* Align to center horizontally */
+            transform: translateX(-50%);
+            /* Adjust for center alignment */
+        }
+    </style>
 </head>
+
 <body>
-    <h1></h1>
+    <header>
+        <?php include_once 'header.php'; ?>
+    </header>
+    <main>
+        <div class="content">
+            <?php include 'login.php'; ?>
+        </div>
+    </main>
 </body>
+
 </html>
