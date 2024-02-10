@@ -203,3 +203,12 @@ function validatePassword($username, $password) {
     
 }
 
+function dd($data)
+{
+    echo '<pre>';
+    var_dump($data);
+    echo '</pre>';
+    exit;
+}
+
+
