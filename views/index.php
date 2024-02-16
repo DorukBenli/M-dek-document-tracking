@@ -1,3 +1,15 @@
+<?php
+include_once '../helper.php';
+// Start session to check for error messages
+session_start();
+$_SESSION['selected_term']=getTerm()["term"];
+
+// Unset $_SESSION['username'] if it's set
+if (isset($_SESSION['username'])) {
+    unset($_SESSION['username']);
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -24,6 +36,10 @@
             transform: translateX(-50%);
             /* Adjust for center alignment */
         }
+
+        .error {
+            color: red;
+        }
     </style>
 </head>
 
@@ -34,6 +50,14 @@
     <main>
         <div class="content">
             <?php include 'login.php'; ?>
+            <?php
+            // Check if there is an error message in the session
+            if (isset($_SESSION['error_message'])) {
+                echo '<div class="error">' . $_SESSION['error_message'] . '</div>';
+                // Unset the error message from the session
+                unset($_SESSION['error_message']);
+            }
+            ?>
         </div>
     </main>
 </body>

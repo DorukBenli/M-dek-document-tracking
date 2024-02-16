@@ -5,13 +5,19 @@ session_start();
 
 // Assuming "Canberk" is the username of the professor
 if (isset($_SESSION['username'])) {
-    $professor_username = $_SESSION['username'];
+    $username = $_SESSION['username'];
 } elseif (isset($_GET['username'])) {
-    $professor_username = $_GET['username'];
+    $username = $_GET['username'];
+}
+
+// Check if the selected term is passed via URL
+if (isset($_SESSION['selected_term'])) {
+    // Retrieve the selected term from the URL
+    $selectedTerm = $_SESSION['selected_term'];
 }
 
 // Get the teaches relationships for the professor
-$teaches_relationships = getTeachesRelationship($professor_username);
+$teaches_relationships = getTeachesRelationship($username);
 
 // Initialize an empty array to store the courses
 $courses_taught_by_canberk = array();
@@ -22,10 +28,12 @@ foreach ($teaches_relationships as $teaches_relationship) {
     $course_code = $teaches_relationship['course_code'];
 
     // Use the course code to get the course information
-    $course_info = getCourse($course_code);
+    $course_info = getCourse($course_code, $selectedTerm);
 
-    // Add the course information to the array of courses taught by Canberk
-    $courses_taught_by_canberk[] = $course_info;
+    if ($course_info != NULL) {
+        // Add the course information to the array of courses taught by Canberk
+        $courses_taught_by_canberk[] = $course_info;
+    }
 }
 
 // Paginate the courses (each page with 2 courses)
@@ -92,12 +100,13 @@ $paginated_courses = array_slice($courses_taught_by_canberk, $start, $per_page);
         }
 
         .card:first-child {
-            margin-top: 10px;
+            margin-top: 0px;
+            margin-bottom: 100px;
             /* Add margin to create space between hframe and first card */
         }
 
         .card:last-child {
-            margin-bottom: 30px;
+            margin-bottom: 100px;
             /* Add margin to create space between last card and bottom of the webpage */
         }
 
@@ -132,28 +141,9 @@ $paginated_courses = array_slice($courses_taught_by_canberk, $start, $per_page);
             pointer-events: none;
             /* Disable click events */
         }
-
-        /* Styles for search bar */
-        .search-container {
-            margin-bottom: 20px;
-            /* Space between search bar and first card */
-        }
-
-        .search-input {
-            width: 300px;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-
-        .search-button {
-            padding: 8px 16px;
-            background-color: #7d96aa;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+        .no-courses-message {
+            text-align: center; /* Center align the text */
+            margin-bottom: 400px; /* Add some top margin for spacing */
         }
     </style>
     <link rel="stylesheet" href="styles.css"> <!-- Include your CSS file -->
@@ -170,17 +160,17 @@ $paginated_courses = array_slice($courses_taught_by_canberk, $start, $per_page);
                 <?php include 'hframe.php'; ?>
             </div>
         </div>
-        <!--<div class="search-container">-->
-            <!--<input type="text" class="search-input" placeholder="Search My Courses...">-->
-            <!--<button class="search-button">-->
-                <!--<i class="fas fa-search"></i>!--> <!-- Font Awesome search icon -->
-            <!--</button>-->
-        <!--</div>-->
-        <?php foreach ($paginated_courses as $course) : ?>
-            <div class="card">
-                <?php include 'card.php'; ?>
+        <?php if ($total_courses == 0) : ?>
+            <div class="no-courses-message">
+                You didn't teach any courses in <?php echo $selectedTerm; ?> semester.
             </div>
-        <?php endforeach; ?>
+        <?php else : ?>
+            <?php foreach ($paginated_courses as $course) : ?>
+                <div class="card">
+                    <?php include 'card.php'; ?>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </main>
     <div class="pagination-container" id="pagination-container">
         <!-- Pagination links will be added dynamically here -->

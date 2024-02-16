@@ -6,16 +6,32 @@
 
     <!-- Content area -->
     <div style="padding: 10px;">
-        <?php if(isset($course)): ?>
+        <?php if (isset($course)) : ?>
             <p style="line-height: 130%;">
-                <strong><?php echo $course['course_code'] . '-' . $course['section_code'] . ' ' . $course['course_name']; ?></strong><br><br>
+                <!-- Make the course code and name clickable -->
+                <a href="#" onclick="redirectToCourse('<?php echo $course['course_code']; ?>', '<?php echo $course['section_code']; ?>'); return false;">
+                    <strong><?php echo $course['course_code'] . '-' . $course['section_code'] . ' ' . $course['course_name']; ?></strong>
+                </a>
+                <br><br>
             </p>
             <!-- Add TA information here -->
             <strong>TA's:</strong><br><br>
-            <?php // Assuming $tas is an array of TA's, replace it with your actual data retrieval logic ?>
-        <?php else: ?>
+            <?php // Assuming $tas is an array of TA's, replace it with your actual data retrieval logic 
+            ?>
+        <?php else : ?>
             <p>No course information available.</p>
         <?php endif; ?>
         <br><br>
     </div>
 </div>
+
+
+<script>
+    // JavaScript function to redirect to the course page
+    function redirectToCourse(courseCode, sectionCode) {
+        // Construct the URL with query parameters
+        var url = '../routes/router.php?action=showcourse&course_code=' + courseCode + '&section_code=' + sectionCode;
+        // Redirect the user to the constructed URL
+        window.location.href = url;
+    }
+</script>

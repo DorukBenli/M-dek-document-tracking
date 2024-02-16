@@ -4,9 +4,12 @@
         background-color: #7d96aa;
         color: white;
         padding: 10px;
-        display: flex; /* Use flexbox for layout */
-        justify-content: space-between; /* Align items with space between */
-        align-items: center; /* Vertically center items */
+        display: flex;
+        /* Use flexbox for layout */
+        justify-content: space-between;
+        /* Align items with space between */
+        align-items: center;
+        /* Vertically center items */
     }
 
     .logo {
@@ -29,10 +32,14 @@
     .term-selection {
         font-size: 12px;
         color: white;
-        display: flex; /* Use flexbox for layout */
-        align-items: center; /* Vertically center items */
-        margin-left: 952px; /* Push to the right */
-        margin-top: 10px; /* Adjust top margin as needed */
+        display: flex;
+        /* Use flexbox for layout */
+        align-items: center;
+        /* Vertically center items */
+        margin-left: 952px;
+        /* Push to the right */
+        margin-top: 10px;
+        /* Adjust top margin as needed */
     }
 
     .term-selection p {
@@ -58,17 +65,36 @@
             <p class="course-info"><strong>Web for Document Tracking System</strong></p>
         </div>
     </div>
-    <div class="term-selection">
-        <p><strong>Select Term:</strong></p>
-        <select name="term_selection" onchange="selTerm(this)">
-            <option value="59" selected>Sep 2023 - Jun 2024</option>
-            <option value="57">Feb 2023 - Jan 2024</option>
-            <option value="55">Sep 2022 - Jun 2023</option>
-            <option value="53">Feb 2022 - Jan 2023</option>
-            <option value="51">Sep 2021 - Jun 2022</option>
-            <option value="49">Feb 2021 - Jan 2022</option>
-            <option value="47">Sep 2020 - Jun 2021</option>
-            <option value="45">Feb 2020 - Jan 2021</option>
-        </select>
-    </div>
+    <?php
+    // Check if the user is logged in (you need to replace this condition with your actual login check)
+    $isLoggedIn = isset($_SESSION['username']) && !empty($_SESSION['username']);
+    ?>
+    <?php if ($isLoggedIn) : ?>
+        <div class="term-selection">
+            <p><strong>Select Term:</strong></p>
+            <form id="termForm" action="../routes/router.php?action=store_term_session" method="post">
+                <select name="term_selection" onchange="updateFormAction()">
+                    <option value="Spring 2024" <?php echo ($_SESSION['selected_term'] === 'Spring 2024' || $_SESSION['selected_term'] === NULL) ? 'selected' : ''; ?>>Spring 2024</option>
+                    <option value="Fall 2023" <?php echo ($_SESSION['selected_term'] === 'Fall 2023') ? 'selected' : ''; ?>>Fall 2023</option>
+                    <option value="Spring 2023" <?php echo ($_SESSION['selected_term'] === 'Spring 2023') ? 'selected' : ''; ?>>Spring 2023</option>
+                    <option value="Fall 2022" <?php echo ($_SESSION['selected_term'] === 'Fall 2022') ? 'selected' : ''; ?>>Fall 2022</option>
+                    <option value="Spring 2022" <?php echo ($_SESSION['selected_term'] === 'Spring 2022') ? 'selected' : ''; ?>>Spring 2022</option>
+                    <option value="Fall 2021" <?php echo ($_SESSION['selected_term'] === 'Fall 2021') ? 'selected' : ''; ?>>Fall 2021</option>
+                    <option value="Spring 2021" <?php echo ($_SESSION['selected_term'] === 'Spring 2021') ? 'selected' : ''; ?>>Spring 2021</option>
+                    <option value="Fall 2020" <?php echo ($_SESSION['selected_term'] === 'Fall 2020') ? 'selected' : ''; ?>>Fall 2020</option>
+                </select>
+            </form>
+        </div>
+    <?php endif; ?>
 </header>
+
+
+<script>
+    function updateFormAction() {
+        var form = document.getElementById('termForm');
+        var selectedTerm = form.elements['term_selection'].value;
+        var actionUrl = '../routes/router.php?action=store_term_session&term=' + encodeURIComponent(selectedTerm);
+        form.action = actionUrl;
+        form.submit(); // Submit the form
+    }
+</script>

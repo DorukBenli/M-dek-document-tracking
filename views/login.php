@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     // Include the helper functions
-    include 'helper.php';
+    include '../helper.php';
 
     // Validate the password
     if (validatePassword($username, $password)) {
@@ -97,7 +97,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="form-group">
             <label for="logintype">Login As:</label>
             <select id="logintype" name="logintype" tabindex="3">
-                <option value=""></option>
                 <option value="professor">Professor</option>
                 <option value="argor">Argor</option>
                 <option value="student">TA/LA</option>

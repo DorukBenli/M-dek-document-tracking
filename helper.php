@@ -60,11 +60,11 @@ function createCourse($course_code, $course_name, $exam_count, $program_code, $t
 }
 
 // Read (Select) Course
-function getCourse($course_code)
+function getCourse($course_code, $term)
 {
     global $conn;
-    $stmt = mysqli_prepare($conn, "SELECT * FROM Course WHERE course_code = ?");
-    mysqli_stmt_bind_param($stmt, 's', $course_code);
+    $stmt = mysqli_prepare($conn, "SELECT * FROM Course WHERE course_code = ? AND term = ?");
+    mysqli_stmt_bind_param($stmt, 'ss', $course_code, $term);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     $course = mysqli_fetch_assoc($result);
@@ -211,4 +211,16 @@ function dd($data)
     exit;
 }
 
+// Read (Select) latest term
+function getTerm()
+{
+    global $conn;
+    $stmt = mysqli_prepare($conn, "SELECT term FROM Course LIMIT 1");
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $term = mysqli_fetch_assoc($result);
+    mysqli_free_result($result);
+    mysqli_stmt_close($stmt);
+    return $term;
+}
 
