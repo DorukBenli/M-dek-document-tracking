@@ -20,10 +20,10 @@ function getUser($username)
     mysqli_stmt_bind_param($stmt, 's', $username);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
-    $user = mysqli_fetch_assoc($result);
+    $User = mysqli_fetch_assoc($result);
     mysqli_free_result($result);
     mysqli_stmt_close($stmt);
-    return $user;
+    return $User;
 }
 
 // Update
@@ -60,11 +60,11 @@ function createCourse($course_code, $course_name, $exam_count, $program_code, $t
 }
 
 // Read (Select) Course
-function getCourse($course_code, $term)
+function getCourse($course_code)
 {
     global $conn;
-    $stmt = mysqli_prepare($conn, "SELECT * FROM Course WHERE course_code = ? AND term = ?");
-    mysqli_stmt_bind_param($stmt, 'ss', $course_code, $term);
+    $stmt = mysqli_prepare($conn, "SELECT * FROM Course WHERE crn = ?");
+    mysqli_stmt_bind_param($stmt, 's', $course_code);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     $course = mysqli_fetch_assoc($result);
@@ -176,7 +176,7 @@ function validatePassword($username, $password) {
     global $conn;
 
     // Prepare and execute the query to retrieve the password for the given username
-    $stmt = mysqli_prepare($conn, "SELECT password FROM Users WHERE username = ?");
+    $stmt = mysqli_prepare($conn, "SELECT password FROM User WHERE username = ?");
     mysqli_stmt_bind_param($stmt, 's', $username);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_bind_result($stmt, $hashed_password);
@@ -203,6 +203,69 @@ function validatePassword($username, $password) {
     
 }
 
+function getRequiredDocumentsForCourse($course_code) {
+    global $conn;
+    $requiredDocuments = [];
+
+    // First, get the requirement type(s) for the course
+    $stmt = mysqli_prepare($conn, "SELECT requirement_type FROM CourseRequirements WHERE course_code = ?");
+    mysqli_stmt_bind_param($stmt, 's', $course_code);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        // For each requirement type, find the associated documents
+        $docStmt = mysqli_prepare($conn, "SELECT document_type FROM RequiredDocuments WHERE requirement_type = ?");
+        $requirementType = $row['requirement_type'];
+        mysqli_stmt_bind_param($docStmt, 's', $requirementType);
+        mysqli_stmt_execute($docStmt);
+        $docResult = mysqli_stmt_get_result($docStmt);
+
+        while ($docRow = mysqli_fetch_assoc($docResult)) {
+            $requiredDocuments[] = $docRow['document_type'];
+        }
+        mysqli_stmt_close($docStmt);
+    }
+    mysqli_free_result($result);
+    mysqli_stmt_close($stmt);
+
+    return $requiredDocuments;
+}
+
+function getCurrentTerm() {
+    $month = date('n'); // Current month as a number (1-12)
+    $year = date('Y'); // Current year
+
+    if ($month >= 9 && $month <= 12) {
+        return "Fall " . $year;
+    } else if ($month >= 1 && $month <= 5) {
+        return "Spring " . $year;
+    } else {
+        return "Summer " . $year;
+    }
+}
+
+function getCrnForCourse($course_code) {
+    global $conn;
+    // Assuming you have a term to help identify the course uniquely
+    $currentTerm = getCurrentTerm();
+
+    $stmt = mysqli_prepare($conn, "SELECT crn FROM Course WHERE course_code = ? AND term = ?");
+    mysqli_stmt_bind_param($stmt, 'ss', $course_code, $currentTerm);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+    if ($row = mysqli_fetch_assoc($result)) {
+        mysqli_stmt_close($stmt);
+        return $row['crn'];
+    } else {
+        mysqli_stmt_close($stmt);
+        return null; // Or handle this scenario as needed
+    }
+}
+
+
+
 function dd($data)
 {
     echo '<pre>';
@@ -211,16 +274,4 @@ function dd($data)
     exit;
 }
 
-// Read (Select) latest term
-function getTerm()
-{
-    global $conn;
-    $stmt = mysqli_prepare($conn, "SELECT term FROM Course LIMIT 1");
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    $term = mysqli_fetch_assoc($result);
-    mysqli_free_result($result);
-    mysqli_stmt_close($stmt);
-    return $term;
-}
 

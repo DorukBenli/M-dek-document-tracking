@@ -14,7 +14,7 @@ $courses_taught_by_canberk = array();
 // Iterate through the teaches relationships to get the course codes
 foreach ($teaches_relationships as $teaches_relationship) {
     // Get the course code from the relationship
-    $course_code = $teaches_relationship['course_code'];
+    $course_code = $teaches_relationship['crn'];
 
     // Use the course code to get the course information
     $course_info = getCourse($course_code);

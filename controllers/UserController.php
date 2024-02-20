@@ -1,8 +1,8 @@
 <?php
-require_once '../models/UserModel.php';
-require_once '../models/CourseModel.php';
-require_once '../database.php'; // Include the database connection details
-require_once '../helper.php';
+require_once __DIR__ . '/../models/UserModel.php'; // This line is Line 2
+require_once __DIR__. '/../models/CourseModel.php';
+require_once __DIR__ . '/../database.php';
+require_once __DIR__ . '/../helper.php';
 
 class UserController
 {
@@ -144,7 +144,73 @@ class UserController
         return $status;
     }
 
+    function getCourseRequirementsByCrn($username, $crn) {
+        global $conn;
+        
+        // Verify that the given username is associated with the CRN in the Teaches table.
+        $stmt = mysqli_prepare($conn, "SELECT * FROM Teaches WHERE username = ? AND crn = ?");
+        mysqli_stmt_bind_param($stmt, 'si', $username, $crn);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $teaches = mysqli_fetch_assoc($result);
+        mysqli_stmt_close($stmt);
+        
+        if (!$teaches) {
+            // If the user is not teaching this CRN, return an error message.
+            return "The lecturer does not teach this course or the course does not exist.";
+        }
+        
+        // Fetch the requirements associated with the course.
+        $reqStmt = mysqli_prepare($conn, "SELECT r.type 
+                                          FROM Requirement r
+                                          JOIN CourseRequirements cr ON cr.requirement_type = r.type
+                                          WHERE cr.crn = ?");
+        mysqli_stmt_bind_param($reqStmt, 'i', $crn);
+        mysqli_stmt_execute($reqStmt);
+        $reqResult = mysqli_stmt_get_result($reqStmt);
+        
+        $requirements = [];
+        while ($reqRow = mysqli_fetch_assoc($reqResult)) {
+            $requirements[] = $reqRow['type'];
+        }
+        mysqli_free_result($reqResult);
+        mysqli_stmt_close($reqStmt);
+        
+        // Return the list of requirements.
+        return $requirements;
+    }
 
+
+    public function addToTeaches($username, $crn) {
+        global $conn;
+    
+        // Check if the teaching relationship already exists
+        $checkStmt = mysqli_prepare($conn, "SELECT * FROM Teaches WHERE username = ? AND crn = ?");
+        mysqli_stmt_bind_param($checkStmt, 'si', $username, $crn);
+        mysqli_stmt_execute($checkStmt);
+        $result = mysqli_stmt_get_result($checkStmt);
+        
+        if (mysqli_fetch_assoc($result)) {
+            // If the relationship already exists, close the statement and return a message.
+            mysqli_stmt_close($checkStmt);
+            return "The teaching relationship already exists.";
+        }
+        mysqli_stmt_close($checkStmt);
+        
+        // The relationship does not exist, so insert it
+        $insertStmt = mysqli_prepare($conn, "INSERT INTO Teaches (username, crn) VALUES (?, ?)");
+        mysqli_stmt_bind_param($insertStmt, 'si', $username, $crn);
+        
+        if (mysqli_stmt_execute($insertStmt)) {
+            // If the insert was successful, close the statement and return success.
+            mysqli_stmt_close($insertStmt);
+            return "Teaching relationship added successfully.";
+        } else {
+            // If the insert failed, close the statement and return an error.
+            mysqli_stmt_close($insertStmt);
+            return "Failed to add the teaching relationship.";
+        }
+    }
 
     public function showCoursePage($courseCode, $sectionCode)
     {

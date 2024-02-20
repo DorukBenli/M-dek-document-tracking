@@ -1,6 +1,6 @@
 <?php
-require_once '../database.php'; // Include the database connection details
-require_once '../helper.php';
+require_once __DIR__ . '/../database.php'; // Include the database connection details
+require_once __DIR__ . '/../helper.php';
 
 class UserModel
 {
