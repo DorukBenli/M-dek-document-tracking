@@ -25,10 +25,10 @@ $courses_taught_by_canberk = array();
 // Iterate through the teaches relationships to get the course codes
 foreach ($teaches_relationships as $teaches_relationship) {
     // Get the course code from the relationship
-    $course_code = $teaches_relationship['course_code'];
+    $crn = $teaches_relationship['crn'];
 
     // Use the course code to get the course information
-    $course_info = getCourse($course_code, $selectedTerm);
+    $course_info = getCourse($crn, $selectedTerm);
 
     if ($course_info != NULL) {
         // Add the course information to the array of courses taught by Canberk
@@ -93,22 +93,6 @@ $paginated_courses = array_slice($courses_taught_by_canberk, $start, $per_page);
 
         }
 
-        .card {
-            /* Styles for card.php */
-            margin-bottom: 30px;
-            /* Adjust the margin to control the distance between hframe and card */
-        }
-
-        .card:first-child {
-            margin-top: 0px;
-            margin-bottom: 100px;
-            /* Add margin to create space between hframe and first card */
-        }
-
-        .card:last-child {
-            margin-bottom: 100px;
-            /* Add margin to create space between last card and bottom of the webpage */
-        }
 
         .pagination-container {
             position: fixed;
@@ -141,9 +125,12 @@ $paginated_courses = array_slice($courses_taught_by_canberk, $start, $per_page);
             pointer-events: none;
             /* Disable click events */
         }
+
         .no-courses-message {
-            text-align: center; /* Center align the text */
-            margin-bottom: 400px; /* Add some top margin for spacing */
+            text-align: center;
+            /* Center align the text */
+            margin-bottom: 400px;
+            /* Add some top margin for spacing */
         }
     </style>
     <link rel="stylesheet" href="styles.css"> <!-- Include your CSS file -->
@@ -165,10 +152,21 @@ $paginated_courses = array_slice($courses_taught_by_canberk, $start, $per_page);
                 You didn't teach any courses in <?php echo $selectedTerm; ?> semester.
             </div>
         <?php else : ?>
-            <?php foreach ($paginated_courses as $course) : ?>
-                <div class="card">
-                    <?php include 'card.php'; ?>
-                </div>
+            <?php $cardMargin = 40; // Adjust this value as needed
+            $counter = 0;
+            ?>
+            <?php foreach ($paginated_courses as $index => $course) : ?>
+                <?php $topPosition = $index * ($cardMargin + 200) + 200; ?>
+                <?php if (end($courses_taught_by_canberk)['crn'] != $course['crn'] || $courses_taught_by_canberk[0]['crn'] == end($courses_taught_by_canberk)['crn'] || $index==1 ) : ?>
+                    <div class="card" style="position: absolute; top: <?php echo $topPosition; ?>px; left: 450px;">
+                        <?php include 'card.php'; ?>
+                    </div>
+                <?php else : ?>
+                    <div class="lastcard" style="position: absolute; top: 200px; left: 450px">
+                        <?php include 'card.php'; ?>
+                    </div>
+                <?php endif; ?>
+                <?php $counter++; ?>
             <?php endforeach; ?>
         <?php endif; ?>
     </main>

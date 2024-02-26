@@ -14,9 +14,9 @@ class CourseModel {
         return $result;
     }
 
-    public function getCourse($course_code) {
-        $stmt = $this->conn->prepare("SELECT * FROM Course WHERE course_code = ?");
-        $stmt->bind_param('s', $course_code);
+    public function getCourse($crn) {
+        $stmt = $this->conn->prepare("SELECT * FROM Course WHERE crn = ?");
+        $stmt->bind_param('i', $crn);
         $stmt->execute();
         $result = $stmt->get_result();
         $course = $result->fetch_assoc();
@@ -32,9 +32,9 @@ class CourseModel {
         return $result;
     }
 
-    public function deleteCourse($course_code) {
-        $stmt = $this->conn->prepare("DELETE FROM Course WHERE course_code = ?");
-        $stmt->bind_param('s', $course_code);
+    public function deleteCourse($crn) {
+        $stmt = $this->conn->prepare("DELETE FROM Course WHERE crn = ?");
+        $stmt->bind_param('i', $crn);
         $result = $stmt->execute();
         $stmt->close();
         return $result;

@@ -42,11 +42,11 @@ class SubmitModel
         return $result;
     }
 
-    public function updateSubmission($term, $courseCode, $documentType, $pdf_data)
+    public function updateSubmission($term, $crn, $documentType, $pdf_data)
     {
         // Update the PDF data
-        $stmt = $this->conn->prepare("UPDATE Submit SET pdf_data = ? WHERE term = ? AND course_code = ? AND document_type = ?");
-        $stmt->bind_param('ssss', $pdf_data, $term, $courseCode, $documentType);
+        $stmt = $this->conn->prepare("UPDATE Submit SET pdf_data = ? WHERE term = ? AND crn = ? AND document_type = ?");
+        $stmt->bind_param('ssis', $pdf_data, $term, $crn, $documentType);
         $pdfUpdateResult = $stmt->execute();
         $stmt->close();
 
@@ -54,8 +54,8 @@ class SubmitModel
         if ($pdfUpdateResult) {
             // Set submitted to 1 for true
             $submitted = 1;
-            $stmt = $this->conn->prepare("UPDATE Submit SET submitted = ? WHERE term = ? AND course_code = ? AND document_type = ?");
-            $stmt->bind_param('isss', $submitted, $term, $courseCode, $documentType);
+            $stmt = $this->conn->prepare("UPDATE Submit SET submitted = ? WHERE term = ? AND crn = ? AND document_type = ?");
+            $stmt->bind_param('isis', $submitted, $term, $crn, $documentType);
             $submittedUpdateResult = $stmt->execute();
             $stmt->close();
 
@@ -67,21 +67,21 @@ class SubmitModel
         }
     }
 
-    public function removeSubmission($term, $courseCode, $documentType)
+    public function removeSubmission($term, $crn, $documentType)
     {
-        $stmt = $this->conn->prepare("UPDATE Submit SET submitted = 0, pdf_data = NULL WHERE term = ? AND course_code = ? AND document_type = ?");
-        $stmt->bind_param('sss', $term, $courseCode, $documentType);
+        $stmt = $this->conn->prepare("UPDATE Submit SET submitted = 0, pdf_data = NULL WHERE term = ? AND crn = ? AND document_type = ?");
+        $stmt->bind_param('sis', $term, $crn, $documentType);
         $result = $stmt->execute();
         $stmt->close();
         return $result;
     }
 
     // Function to retrieve PDF BLOB data from the Submit table
-    public function getPDFData($term, $courseCode, $documentType)
+    public function getPDFData($term, $crn, $documentType)
     {
         // Prepare the SQL statement
-        $stmt = $this->conn->prepare("SELECT pdf_data FROM Submit WHERE term = ? AND course_code = ? AND document_type = ?");
-        $stmt->bind_param('sss', $term, $courseCode, $documentType);
+        $stmt = $this->conn->prepare("SELECT pdf_data FROM Submit WHERE term = ? AND crn = ? AND document_type = ?");
+        $stmt->bind_param('sis', $term, $crn, $documentType);
 
         // Execute the query
         if (!$stmt->execute()) {

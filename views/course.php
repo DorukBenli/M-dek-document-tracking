@@ -1,7 +1,10 @@
 <?php
 // Include the database functions file
 include '../helper.php';
-session_start();
+include '../controllers/UserController.php';
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Assuming "Canberk" is the username of the professor
 if (isset($_SESSION['username'])) {
@@ -17,7 +20,19 @@ $courseData = json_decode($decodedCourseDetails, true);
 // Extract course details and requirements
 $course = $courseData['courseDetails'] ?? [];
 $requirements = $courseData['requirements'] ?? [];
-$status=$courseData['status'] ?? [];
+$status = $courseData['status'] ?? [];
+
+if (isset($_SESSION['tas'])) {
+    $tas = $_SESSION['tas'];
+} else {
+    $tas = getTAs($course['course_code'], $course['term']);
+}
+
+if (isset($_SESSION['role'])) {
+    $role = $_SESSION['role'];
+} else {
+    $role = getRole($username)["role"];
+}
 ?>
 
 

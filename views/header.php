@@ -74,14 +74,14 @@
             <p><strong>Select Term:</strong></p>
             <form id="termForm" action="../routes/router.php?action=store_term_session" method="post">
                 <select name="term_selection" onchange="updateFormAction()">
-                    <option value="Spring 2024" <?php echo ($_SESSION['selected_term'] === 'Spring 2024' || $_SESSION['selected_term'] === NULL) ? 'selected' : ''; ?>>Spring 2024</option>
-                    <option value="Fall 2023" <?php echo ($_SESSION['selected_term'] === 'Fall 2023') ? 'selected' : ''; ?>>Fall 2023</option>
-                    <option value="Spring 2023" <?php echo ($_SESSION['selected_term'] === 'Spring 2023') ? 'selected' : ''; ?>>Spring 2023</option>
-                    <option value="Fall 2022" <?php echo ($_SESSION['selected_term'] === 'Fall 2022') ? 'selected' : ''; ?>>Fall 2022</option>
-                    <option value="Spring 2022" <?php echo ($_SESSION['selected_term'] === 'Spring 2022') ? 'selected' : ''; ?>>Spring 2022</option>
-                    <option value="Fall 2021" <?php echo ($_SESSION['selected_term'] === 'Fall 2021') ? 'selected' : ''; ?>>Fall 2021</option>
-                    <option value="Spring 2021" <?php echo ($_SESSION['selected_term'] === 'Spring 2021') ? 'selected' : ''; ?>>Spring 2021</option>
-                    <option value="Fall 2020" <?php echo ($_SESSION['selected_term'] === 'Fall 2020') ? 'selected' : ''; ?>>Fall 2020</option>
+                    <option value="202302" <?php echo ($_SESSION['selected_term'] === '202302' || $_SESSION['selected_term'] === NULL) ? 'selected' : ''; ?>>Spring 2024</option>
+                    <option value="202301" <?php echo ($_SESSION['selected_term'] === '202301') ? 'selected' : ''; ?>>Fall 2023</option>
+                    <option value="202202" <?php echo ($_SESSION['selected_term'] === '202202') ? 'selected' : ''; ?>>Spring 2023</option>
+                    <option value="202201" <?php echo ($_SESSION['selected_term'] === '202201') ? 'selected' : ''; ?>>Fall 2022</option>
+                    <option value="202102" <?php echo ($_SESSION['selected_term'] === '202102') ? 'selected' : ''; ?>>Spring 2022</option>
+                    <option value="202101" <?php echo ($_SESSION['selected_term'] === '202101') ? 'selected' : ''; ?>>Fall 2021</option>
+                    <option value="202002" <?php echo ($_SESSION['selected_term'] === '202002') ? 'selected' : ''; ?>>Spring 2021</option>
+                    <option value="202001" <?php echo ($_SESSION['selected_term'] === '202001') ? 'selected' : ''; ?>>Fall 2020</option>
                 </select>
             </form>
         </div>

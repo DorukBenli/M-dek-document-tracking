@@ -26,6 +26,19 @@ function getUser($username)
     return $user;
 }
 
+function getRole($username)
+{
+    global $conn;
+    $stmt = mysqli_prepare($conn, "SELECT role FROM User WHERE username = ?");
+    mysqli_stmt_bind_param($stmt, 's', $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $role = mysqli_fetch_assoc($result);
+    mysqli_free_result($result);
+    mysqli_stmt_close($stmt);
+    return $role;
+}
+
 // Update
 function updateUser($username, $role)
 {
@@ -60,11 +73,11 @@ function createCourse($course_code, $course_name, $exam_count, $program_code, $t
 }
 
 // Read (Select) Course
-function getCourse($course_code, $term)
+function getCourse($crn, $term)
 {
     global $conn;
-    $stmt = mysqli_prepare($conn, "SELECT * FROM Course WHERE course_code = ? AND term = ?");
-    mysqli_stmt_bind_param($stmt, 'ss', $course_code, $term);
+    $stmt = mysqli_prepare($conn, "SELECT * FROM Course WHERE crn = ? AND term = ?");
+    mysqli_stmt_bind_param($stmt, 'is', $crn, $term);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     $course = mysqli_fetch_assoc($result);
@@ -96,11 +109,11 @@ function deleteCourse($course_code)
 }
 
 // Create (Insert) Teaches relationship
-function createTeachesRelationship($username, $course_code)
+function createTeachesRelationship($username, $crn)
 {
     global $conn;
-    $stmt = mysqli_prepare($conn, "INSERT INTO Teaches (username, course_code) VALUES (?, ?)");
-    mysqli_stmt_bind_param($stmt, 'ss', $username, $course_code);
+    $stmt = mysqli_prepare($conn, "INSERT INTO Teaches (username, crn) VALUES (?, ?)");
+    mysqli_stmt_bind_param($stmt, 'si', $username, $crn);
     $result = mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
     return $result;
@@ -128,51 +141,53 @@ function getTeachesRelationship($username)
 
 
 // Delete Teaches relationship
-function deleteTeachesRelationship($username, $course_code)
+function deleteTeachesRelationship($username, $crn)
 {
     global $conn;
-    $stmt = mysqli_prepare($conn, "DELETE FROM Teaches WHERE username = ? AND course_code = ?");
+    $stmt = mysqli_prepare($conn, "DELETE FROM Teaches WHERE username = ? AND crn = ?");
     mysqli_stmt_bind_param($stmt, 'ss', $username, $course_code);
     $result = mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
     return $result;
 }
 
-function getProfessorsTeachingSameCourseInSection($course_code, $section_code) {
+function getProfessorsTeachingSameCourseInSection($crn, $section_code)
+{
     global $conn; // Assuming $conn is your database connection object
-    
+
     // Prepare the SQL query to select distinct usernames of professors teaching the same course at the same section
     $sql = "SELECT DISTINCT T.username 
             FROM Teaches AS T
-            JOIN Course AS C ON T.course_code = C.course_code
-            WHERE T.course_code = ? AND C.section_code = ?";
-    
+            JOIN Course AS C ON T.crn = C.crn
+            WHERE T.crn = ? AND C.section_code = ?";
+
     // Prepare and bind parameters to the SQL statement
     $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, 'ss', $course_code, $section_code);
-    
+    mysqli_stmt_bind_param($stmt, 'is', $crn, $section_code);
+
     // Execute the prepared statement
     mysqli_stmt_execute($stmt);
-    
+
     // Bind the result variables
     mysqli_stmt_bind_result($stmt, $username);
-    
+
     // Initialize an array to store the usernames of professors
     $professors = array();
-    
+
     // Fetch the results into the array
     while (mysqli_stmt_fetch($stmt)) {
         $professors[] = $username;
     }
-    
+
     // Close the statement
     mysqli_stmt_close($stmt);
-    
+
     // Return the array of professor usernames
     return $professors;
 }
 
-function validatePassword($username, $password) {
+function validatePassword($username, $password)
+{
     global $conn;
 
     // Prepare and execute the query to retrieve the password for the given username
@@ -200,7 +215,6 @@ function validatePassword($username, $password) {
     } else {
         return false; // Password is invalid
     }
-    
 }
 
 function dd($data)
@@ -224,3 +238,18 @@ function getTerm()
     return $term;
 }
 
+function getTAs($crn, $term)
+{
+    global $conn;
+    $stmt = mysqli_prepare($conn, "SELECT U.username FROM User U JOIN Teaches T ON U.username = T.username JOIN Course C ON T.crn = C.crn WHERE T.crn = ? AND U.role = 'TA' AND C.term = ?");
+    mysqli_stmt_bind_param($stmt, 'is', $crn, $term);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $tas = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $tas[] = $row;
+    }
+    mysqli_free_result($result);
+    mysqli_stmt_close($stmt);
+    return $tas;
+}

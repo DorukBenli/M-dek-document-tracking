@@ -3,6 +3,9 @@ require_once '../models/UserModel.php';
 require_once '../models/CourseModel.php';
 require_once '../database.php'; // Include the database connection details
 require_once '../helper.php';
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 class UserController
 {
@@ -83,22 +86,16 @@ class UserController
         }
     }
 
-    public function loginUser($username, $password, $role)
+    public function loginUser($username, $password)
     {
         // Validate the password
         $isValid = $this->userModel->validatePassword($username, $password);
 
-        // Retrieve the true role from the database
-        $trueRole = strtolower($this->getUser($username)['role']);
-
-        // Convert the provided role to lowercase
-        $role = strtolower($role);
-
-
-        if ($isValid && $trueRole==$role) {
+        if ($isValid) {
             // Password is valid, set session variables
             session_start();
             $_SESSION['username'] = $username;
+            $_SESSION['role'] = getRole($username)["role"];
 
             // Redirect to show.php or any other desired page
             header("Location: ../views/show.php");
@@ -146,16 +143,22 @@ class UserController
 
 
 
-    public function showCoursePage($courseCode, $sectionCode)
+    public function showCoursePage($crn, $term)
     {
         // Fetch course details and requirements from the database
-        $courseDetails = $this->userModel->getCourseDetails($courseCode, $sectionCode);
-        $requirements = $this->userModel->getRequiredDocumentsForCourse($courseCode);
-        $status = $this->userModel->getSubmittedStatusForCourseDocuments($courseDetails['term'], $courseCode);
+        $courseDetails = $this->userModel->getCourseDetails($crn, $term);
+        $requirements = $this->userModel->getRequiredDocumentsForCourse($crn, $term);
+        $status = $this->userModel->getSubmittedStatusForCourseDocuments($courseDetails['term'], $crn);
 
         if ($courseDetails) {
             // JSON encode the course details and requirements
             $encodedCourseDetails = json_encode(['courseDetails' => $courseDetails, 'requirements' => $requirements, 'status' => $status]);
+
+            // Assuming $userController is an instance of your UserController class
+            $tas = $this->userModel->getTAsForCourse($crn, $courseDetails['term']);
+
+            // Store the unassigned TAs array in a session variable
+            $_SESSION['tas'] = $tas;
 
             // Encode the JSON string for URL
             $encodedCourseDetails = urlencode($encodedCourseDetails);
@@ -173,9 +176,26 @@ class UserController
     }
 
     // Method to get required documents for a course
-    public function getRequiredDocumentsForCourse($courseCode)
+    public function getRequiredDocumentsForCourse($crn, $term)
     {
         // Call the UserModel's method to get required documents
-        return $this->userModel->getRequiredDocumentsForCourse($courseCode);
+        return $this->userModel->getRequiredDocumentsForCourse($crn, $term);
     }
+
+    public function getTAs($crn, $term) {
+        return $this->userModel->getTAsForCourse($crn, $term);
+    }
+
+    public function removeTAFromCourse($username, $crn) {
+        return $this->userModel->removeTAFromCourse($username, $crn);
+    }
+
+    public function checkIfTAAvailableByUsername($username) {
+        return $this->userModel->checkIfTAAvailableByUsername($username);
+    }
+
+    public function addTAtoCourse($username, $crn) {
+        return $this->userModel->addTAtoCourse($username, $crn);
+    }
+
 }

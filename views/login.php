@@ -95,15 +95,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="password" id="password" name="password" tabindex="2">
         </div>
         <div class="form-group">
-            <label for="logintype">Login As:</label>
-            <select id="logintype" name="logintype" tabindex="3">
-                <option value="professor">Professor</option>
-                <option value="argor">Argor</option>
-                <option value="student">TA/LA</option>
-                <option value="webadmin">Web Admin</option>
-            </select>
-        </div>
-        <div class="form-group">
             <input type="submit" name="button" tabindex="4" value="Log in">
         </div>
     </form>
