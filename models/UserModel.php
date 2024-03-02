@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../database.php'; // Include the database connection details
-require_once __DIR__ . '/../helper.php';
+require_once '../database.php'; // Include the database connection details
+require_once '../helper.php';
 
 class UserModel
 {
@@ -136,14 +136,13 @@ class UserModel
         return $this->courseModel->getCourse($crn);
     }
 
-    // Method to get required documents and their corresponding requirement for a course
     public function getRequiredDocumentsForCourse($crn, $term)
     {
         // Prepare the SQL query to fetch required documents and their corresponding requirements for the given course
         $sql = "SELECT cr.requirement_type, rd.document_type
-            FROM bitirme.CourseRequirements cr
-            JOIN bitirme.RequiredDocuments rd ON cr.requirement_type = rd.requirement_type
-            WHERE cr.crn = ? AND cr.term = ?";
+        FROM bitirme.CourseRequirements cr
+        JOIN bitirme.RequiredDocuments rd ON cr.requirement_type = rd.requirement_type
+        WHERE cr.crn = ? AND cr.term = ?";
 
         // Prepare the statement
         $stmt = $this->conn->prepare($sql);
@@ -170,21 +169,33 @@ class UserModel
             $requirementType = $row['requirement_type'];
             $documentType = $row['document_type'];
 
-            // Check if the requirement type already exists as a key in the documents array
-            if (!isset($documents[$requirementType])) {
-                // If not, create a new array for the requirement type
-                $documents[$requirementType] = [];
+            // Check if the document exists in the Submit table
+            if ($this->checkDocumentExistsInSubmit($term, $crn, $documentType)) {
+                // Check if the requirement type already exists as a key in the documents array
+                if (!isset($documents[$requirementType])) {
+                    // If not, create a new array for the requirement type
+                    $documents[$requirementType] = [];
+                }
+
+                // Add the document type to the corresponding requirement type array
+                $documents[$requirementType][] = $documentType;
             }
-
-            // Add the document type to the corresponding requirement type array
-            $documents[$requirementType][] = $documentType;
         }
-
         // Close the statement
         $stmt->close();
 
         // Return the fetched documents
         return $documents;
+    }
+
+    public function checkDocumentExistsInSubmit($term, $crn, $documentType)
+    {
+        $stmt = $this->conn->prepare("SELECT COUNT(*) AS count FROM Submit WHERE term = ? AND crn = ? AND document_type = ?");
+        $stmt->bind_param('sis', $term, $crn, $documentType);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $result['count'] > 0;
     }
 
     public function getDocumentTypes()

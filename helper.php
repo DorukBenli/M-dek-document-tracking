@@ -26,7 +26,6 @@ function getUser($username)
     return $user;
 }
 
-
 function getRole($username)
 {
     global $conn;
@@ -192,7 +191,7 @@ function validatePassword($username, $password)
     global $conn;
 
     // Prepare and execute the query to retrieve the password for the given username
-    $stmt = mysqli_prepare($conn, "SELECT password FROM User WHERE username = ?");
+    $stmt = mysqli_prepare($conn, "SELECT password FROM Users WHERE username = ?");
     mysqli_stmt_bind_param($stmt, 's', $username);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_bind_result($stmt, $hashed_password);
@@ -216,71 +215,7 @@ function validatePassword($username, $password)
     } else {
         return false; // Password is invalid
     }
-    
 }
-
-function getRequiredDocumentsForCourse($course_code) {
-    global $conn;
-    $requiredDocuments = [];
-
-    // First, get the requirement type(s) for the course
-    $stmt = mysqli_prepare($conn, "SELECT requirement_type FROM CourseRequirements WHERE course_code = ?");
-    mysqli_stmt_bind_param($stmt, 's', $course_code);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-
-    while ($row = mysqli_fetch_assoc($result)) {
-        // For each requirement type, find the associated documents
-        $docStmt = mysqli_prepare($conn, "SELECT document_type FROM RequiredDocuments WHERE requirement_type = ?");
-        $requirementType = $row['requirement_type'];
-        mysqli_stmt_bind_param($docStmt, 's', $requirementType);
-        mysqli_stmt_execute($docStmt);
-        $docResult = mysqli_stmt_get_result($docStmt);
-
-        while ($docRow = mysqli_fetch_assoc($docResult)) {
-            $requiredDocuments[] = $docRow['document_type'];
-        }
-        mysqli_stmt_close($docStmt);
-    }
-    mysqli_free_result($result);
-    mysqli_stmt_close($stmt);
-
-    return $requiredDocuments;
-}
-
-function getCurrentTerm() {
-    $month = date('n'); // Current month as a number (1-12)
-    $year = date('Y'); // Current year
-
-    if ($month >= 9 && $month <= 12) {
-        return "Fall " . $year;
-    } else if ($month >= 1 && $month <= 5) {
-        return "Spring " . $year;
-    } else {
-        return "Summer " . $year;
-    }
-}
-
-function getCrnForCourse($course_code) {
-    global $conn;
-    // Assuming you have a term to help identify the course uniquely
-    $currentTerm = getCurrentTerm();
-
-    $stmt = mysqli_prepare($conn, "SELECT crn FROM Course WHERE course_code = ? AND term = ?");
-    mysqli_stmt_bind_param($stmt, 'ss', $course_code, $currentTerm);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    
-    if ($row = mysqli_fetch_assoc($result)) {
-        mysqli_stmt_close($stmt);
-        return $row['crn'];
-    } else {
-        mysqli_stmt_close($stmt);
-        return null; // Or handle this scenario as needed
-    }
-}
-
-
 
 function dd($data)
 {
@@ -290,6 +225,18 @@ function dd($data)
     exit;
 }
 
+// Read (Select) latest term
+function getTerm()
+{
+    global $conn;
+    $stmt = mysqli_prepare($conn, "SELECT term FROM Course LIMIT 1");
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $term = mysqli_fetch_assoc($result);
+    mysqli_free_result($result);
+    mysqli_stmt_close($stmt);
+    return $term;
+}
 
 function getTAs($crn, $term)
 {
@@ -305,4 +252,47 @@ function getTAs($crn, $term)
     mysqli_free_result($result);
     mysqli_stmt_close($stmt);
     return $tas;
+}
+
+function getNumMidtermsForCourse($term, $crn)
+{
+    global $conn;
+
+    // Prepare the SQL statement
+    $stmt = mysqli_prepare($conn, "SELECT COUNT(*) AS num_midterms FROM bitirme.Submit WHERE term = ? AND crn = ? AND document_type LIKE 'Midterm %' AND (SUBSTRING(document_type, -1) REGEXP '^[0-9]+$' OR SUBSTRING(document_type, -2) REGEXP '^[0-9]+$')");
+
+    // Bind parameters and execute the statement
+    mysqli_stmt_bind_param($stmt, 'si', $term, $crn);
+    mysqli_stmt_execute($stmt);
+
+    // Get the result
+    $result = mysqli_stmt_get_result($stmt);
+
+    // Fetch the result (assuming you want to fetch the data, adjust as needed)
+    $row = mysqli_fetch_assoc($result);
+    $numMidterms = ($row['num_midterms'] !== null) ? $row['num_midterms'] : 0;
+
+    // Free the result and close the statement
+    mysqli_free_result($result);
+    mysqli_stmt_close($stmt);
+
+    // Return the result (assuming you want to return something, adjust as needed)
+    return $numMidterms;
+}
+
+// Define a function to check if a course has a final exam
+function hasFinalExam($term, $crn) {
+    global $conn; // Assuming $conn is your database connection
+
+    // Prepare and execute the SQL query to check for a final exam
+    $sql = "SELECT COUNT(*) AS num_final FROM bitirme.Submit WHERE term = ? AND crn = ? AND document_type = 'Final'";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, 'si', $term, $crn);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $numFinal);
+    mysqli_stmt_fetch($stmt);
+    mysqli_stmt_close($stmt);
+
+    // Return true if the course has a final exam, false otherwise
+    return ($numFinal > 0);
 }

@@ -1,6 +1,7 @@
 <?php
 require_once '../controllers/UserController.php';
 require_once '../controllers/SubmitController.php';
+require_once '../controllers/DocumentController.php';
 require_once '../database.php'; // Include the database connection details
 require_once '../helper.php';
 if (session_status() == PHP_SESSION_NONE) {
@@ -13,6 +14,7 @@ $action = isset($_GET['action']) ? $_GET['action'] : '';
 // Create an instance of the UserController
 $userController = new UserController($conn);
 $submitController = new SubmitController($conn);
+$documentController = new DocumentController($conn);
 
 // Route requests to controller methods based on the action
 switch ($action) {
@@ -248,6 +250,65 @@ switch ($action) {
         }
 
         break;
+    case 'removeExam':
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['term']) && isset($_POST['course_code']) && isset($_POST['section_code']) && isset($_POST['document_type']) && isset($_POST['crn'])) {
+            $term = $_POST['term'];
+            $course_code = $_POST['course_code'];
+            $section_code = $_POST['section_code'];
+            $document_type = $_POST['document_type'];
+            $crn = $_POST['crn'];
+
+            $document = str_replace('_', ' ', $document_type);
+
+            $result = $submitController->removeExamFromCourse($term, $crn, $document);
+
+            if ($result) {
+                $userController->showCoursePage($crn, $term);
+                exit; // Stop script execution after redirecting
+            } else {
+                echo "Failed remove operation";
+            }
+        } else {
+            // Handle the case where the required POST data is missing
+            echo "Error: Missing data for removing $document.";
+            exit; // Stop script execution
+        }
+        break;
+    case 'addExam':
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['term']) && isset($_POST['crn']) && isset($_POST['exam'])) {
+            $term = $_POST['term'];
+            $crn = $_POST['crn'];
+            $exam = $_POST['exam'];
+
+            // Check if the document exists
+            $documentExists = $documentController->getDocument($exam);
+
+            if (!$documentExists) {
+
+                // Array of document types
+                $documentTypes = array(
+                    $exam,
+                    "$exam Attendance",
+                    "$exam Answer Key",
+                    "Best $exam",
+                    "Average $exam",
+                    "Worst $exam"
+                );
+
+                $documentController->add($documentTypes);
+                $documentController->addRequiredDocuments($documentTypes);
+            }
+
+            $result = $submitController->add($term, $crn, $exam);
+            if ($result) {
+                $userController->showCoursePage($crn, $term);
+                exit; // Stop script execution after redirecting
+            } else {
+                echo "Failed add operation";
+            }
+        }
+
+
     default:
         // Handle unknown routes
         echo '404 Not Found';

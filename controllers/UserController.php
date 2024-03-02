@@ -197,5 +197,4 @@ class UserController
     public function addTAtoCourse($username, $crn) {
         return $this->userModel->addTAtoCourse($username, $crn);
     }
-
 }

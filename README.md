@@ -1,39 +1,28 @@
--- Create User table
+#database creation code
+
 CREATE TABLE User (
-    username VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    role VARCHAR(255),
-    PRIMARY KEY (username)
+    username VARCHAR(255) PRIMARY KEY,
+    role VARCHAR(255) NOT NULL
 );
 
--- Create Course table
 CREATE TABLE Course (
-    crn INT NOT NULL,
-    course_code VARCHAR(255),
-    course_name VARCHAR(255),
+    course_code VARCHAR(255) PRIMARY KEY,
+    course_name VARCHAR(255) NOT NULL,
     exam_count INT,
     program_code VARCHAR(255),
     term VARCHAR(255),
-    section_code VARCHAR(255),
-    PRIMARY KEY (crn, term)
+    crn VARCHAR(255),
+    section_code VARCHAR(255)
 );
+
 
 -- Make sure the foreign keys reference existing primary keys correctly
 -- Create Handles table
 CREATE TABLE Handles (
-    crn INT,
+    course_code VARCHAR(255),
     username VARCHAR(255),
-    PRIMARY KEY (crn, username),
-    FOREIGN KEY (crn) REFERENCES Course(crn),
-    FOREIGN KEY (username) REFERENCES User(username)
-);
-
--- Create Teaches table
-CREATE TABLE Teaches (
-    crn INT,
-    username VARCHAR(255),
-    PRIMARY KEY (crn, username),
-    FOREIGN KEY (crn) REFERENCES Course(crn),
+    PRIMARY KEY (course_code, username),
+    FOREIGN KEY (course_code) REFERENCES Course(course_code),
     FOREIGN KEY (username) REFERENCES User(username)
 );
 
@@ -64,42 +53,37 @@ CREATE TABLE RequiredDocuments (
 CREATE TABLE CourseRequirements (
     requirement_type VARCHAR(255),
     term VARCHAR(255),
-    crn INT,
-    PRIMARY KEY (requirement_type, term, crn),
+    course_code VARCHAR(255),
+    PRIMARY KEY (requirement_type, term, course_code),
     FOREIGN KEY (requirement_type) REFERENCES Requirement(type),
-    FOREIGN KEY (crn) REFERENCES Course(crn)
+    FOREIGN KEY (course_code) REFERENCES Course(course_code)
 );
 
 -- Create Submit table
 CREATE TABLE Submit (
     term VARCHAR(255),
-    crn INT,
+    course_code VARCHAR(255),
     document_type VARCHAR(255),
     submitted BOOLEAN,
     pdf_data BLOB,
-    PRIMARY KEY (term, crn, document_type),
-    FOREIGN KEY (crn) REFERENCES Course(crn),
+    PRIMARY KEY (term, course_code, document_type),
+    FOREIGN KEY (course_code) REFERENCES Course(course_code),
     FOREIGN KEY (document_type) REFERENCES Documents(type)
 );
 
 CREATE TABLE Soft_Submit (
     term VARCHAR(255),
-    crn INT,
+    course_code VARCHAR(255),
     document_type VARCHAR(255),
     submitted_prof BOOLEAN,
     submitted_arg BOOLEAN,
-    PRIMARY KEY (term, crn, document_type),
-    FOREIGN KEY (crn) REFERENCES Course(crn),
+    PRIMARY KEY (term, course_code, document_type),
+    FOREIGN KEY (course_code) REFERENCES Course(course_code),
     FOREIGN KEY (document_type) REFERENCES Documents(type)
 );
 
 ### add the following code for dummy data as of now
-INSERT INTO Course (course_code, course_name, exam_count, program_code, term, crn, section_code) VALUES
-('CS101', 'Introduction to Computer Science', 2, 'CSE', 'Spring 2024', 10101, 'A01'),
-('CS102', 'Data Structures', 2, 'CSE', 'Fall 2024', 10202, 'A02'),
-('CS103', 'Algorithms', 2, 'CSE', 'Summer 2024', 10303, 'A03');
 
-INSERT INTO user (username, role, password) VALUES ('doruk', 'lecturer','123');
 
 
 INSERT INTO Requirement (type) VALUES ('YÖK');
@@ -110,5 +94,3 @@ INSERT INTO RequiredDocuments (requirement_type, document_type) VALUES ('YÖK', 
 INSERT INTO Course (course_code, course_name, exam_count, program_code, term, crn, section_code) VALUES ('CS101', 'Introduction to Programming', 3, 'COMPSCI', 'Spring 2024', 12345, '01');
 
 INSERT INTO CourseRequirements (requirement_type, term, crn) VALUES ('YÖK', 'Spring 2024', 12345);
-
-

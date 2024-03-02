@@ -49,6 +49,55 @@
         cursor: pointer;
     }
 
+    .modal-exam {
+        display: none;
+        /* Hidden by default */
+        position: fixed;
+        /* Stay in place */
+        z-index: 1;
+        /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        /* Enable scroll if needed */
+        background-color: rgba(0, 0, 0, 0.4);
+        /* Black w/ opacity */
+    }
+
+    .modal-content-exam {
+        background-color: #fefefe;
+        margin-top: 350px;
+        margin-left: 460px;
+        /* 5% from the top and centered */
+        padding: 30px;
+        border: 1px solid #888;
+        width: 50%;
+        /* Adjust the width of the modal */
+        max-width: 400px;
+        /* Set a maximum width */
+        border-radius: 10px;
+        /* Rounded corners */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        /* Add shadow */
+    }
+
+    /* Close button */
+    .close-exam {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close-exam:hover,
+    .close-exam:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
     /* Button styles */
     .button {
         border: none;
@@ -63,6 +112,10 @@
         border-radius: 5px;
     }
 </style>
+
+<?php $numMidterms = getNumMidtermsForCourse($course['term'], $course['crn']); // Example: Number of midterms for the course
+$hasFinalExam = hasFinalExam($course['term'], $course['crn']); // Assuming $term and $crn are the term and CRN of the course
+?>
 
 <div style="width: 600px; margin: auto; border: 1px solid #000;">
     <!-- Restricted area with background color -->

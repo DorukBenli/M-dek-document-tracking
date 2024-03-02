@@ -1,10 +1,13 @@
 <?php
-require_once 'models/RequirementModel.php';
+require_once '../models/RequirementModel.php';
+require_once '../database.php';
 
 class RequirementController {
     private $requirementModel;
+    private $conn; // Add this property to store the connection
 
     public function __construct($dbConnection) {
+        $this->conn = $dbConnection; // Store the connection
         $this->requirementModel = new RequirementModel($dbConnection);
     }
 

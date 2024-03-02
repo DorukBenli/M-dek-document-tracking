@@ -1,15 +1,9 @@
 <?php
-/*
     $db_server = "localhost";
     $db_user = "root";
     $db_pass = "Canberk102002";
     $db_name = "bitirme";
-*/
 
-    $db_server = "localhost";
-    $db_user = "root";
-    $db_pass = "";
-    $db_name = "bitirme";
     // Attempt to connect to the MySQL database
     $conn = mysqli_connect($db_server, $db_user, $db_pass, $db_name);
 
