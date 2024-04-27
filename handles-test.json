@@ -1,0 +1,14 @@
+[
+    {
+        "username": "user1",
+        "crn": 101
+    },
+    {
+        "username": "user2",
+        "crn": 102
+    },
+    {
+        "username": "user3",
+        "crn": 103
+    }
+]

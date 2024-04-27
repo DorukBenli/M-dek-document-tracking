@@ -1,0 +1,14 @@
+[
+    {
+        "requirement_type": "Requirement1",
+        "document_type": "Document1-test"
+    },
+    {
+        "requirement_type": "Requirement1",
+        "document_type": "Document2-test"
+    },
+    {
+        "requirement_type": "Requirement1",
+        "document_type": "Document3-test"
+    }
+]
